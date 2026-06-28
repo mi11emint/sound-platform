@@ -38,7 +38,7 @@
             background: rgba(255,255,255,0.8);
             position: sticky;
             top: 0;
-            zIndex: 100;
+            z-index: 100;
             backdrop-filter: blur(5px);
         }
 
@@ -271,12 +271,11 @@
             <h3>依頼箱 (Chat)</h3>
             <div class="card">
                 <div class="chat-box">
-                    <div class="msg receive">はじめまして！動画のナレーションをお願いできますか？</div>
-                    <div class="msg send">ご依頼ありがとうございます！どのようなイメージでしょうか？</div>
+                    <!-- Firebaseから取得したメッセージがここに自動で入ります -->
                 </div>
                 <div style="display: flex; gap:5px;">
                     <input type="text" placeholder="メッセージを入力..." style="flex:1; padding:8px; border-radius:4px; border:1px solid #ccc;">
-                    <button class="nav-btn">送信</button>
+                    <button class="nav-btn" id="send-btn">送信</button>
                 </div>
             </div>
 
@@ -294,114 +293,70 @@
         </section>
     </main>
 
-    <script>
-        // ページ切り替えのJavascript
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        // DL数を仮に増やす機能
-        let count = 24;
-        function countDl() {
-            count++;
-            document.getElementById('dl-count').innerText = `DL数: ${count}回`;
-            alert("音声をダウンロードしました！（デモ動作）");
-        }
-
-        // デコレーション変更
-        function changeBg(color) {
-            document.documentElement.style.setProperty('--bg-color', color);
-        }
-        function changeFont(font) {
-            document.documentElement.style.setProperty('--font-family', font);
-        }
-        
-        
-    <!-- 1. Firebaseの最新のプログラム（SDK）を読み込む -->
+    <!-- Firebaseのプログラムとアプリの全処理 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // 2. ★ここにあなたの「金庫の鍵」をそのまま貼り付けてください
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        // あなたのFirebase金庫の鍵
+        const firebaseConfig = {
+            apiKey: "AIzaSyABhX_tOk7ExSTBSPY5wXjoID-9YCGNjJQ",
+            authDomain: "sound-platform-48602.firebaseapp.com",
+            projectId: "sound-platform-48602",
+            storageBucket: "sound-platform-48602.firebasestorage.app",
+            messagingSenderId: "595859135501",
+            appId: "1:595859135501:web:8f96a29fdaa3decf9b0944"
+        };
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyABhX_tOk7ExSTBSPY5wXjoID-9YCGNjJQ",
-  authDomain: "sound-platform-48602.firebaseapp.com",
-  projectId: "sound-platform-48602",
-  storageBucket: "sound-platform-48602.firebasestorage.app",
-  messagingSenderId: "595859135501",
-  appId: "1:595859135501:web:8f96a29fdaa3decf9b0944"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-        // Firebaseの初期化
+        // Firebaseとデータベースの初期化
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- ここから本物のチャット（依頼箱）の処理 ---
-
-        // HTMLの要素（ボタンや入力欄）を取得
+        // --- 本物のチャット（依頼箱）の処理 ---
         const chatInput = document.querySelector('#profile-page input[type="text"]');
-        const chatBtn = document.querySelector('#profile-page .nav-btn[onclick=""]'); // 送信ボタン
+        const chatBtn = document.getElementById('send-btn');
         const chatBox = document.querySelector('.chat-box');
 
-        // A. メッセージを送信して金庫（Firestore）に保存する関数
+        // メッセージ送信
         async function sendMessage() {
             const text = chatInput.value.trim();
-            if (text === "") return; // 空っぽなら何もしない
+            if (text === "") return;
 
             try {
-                // Firestoreの「messages」というコレクション（フォルダのようなもの）に保存
                 await addDoc(collection(db, "messages"), {
                     text: text,
-                    sender: "user", // 本来はログインユーザー名が入ります
-                    createdAt: new Date() // 送信時間を記録
+                    sender: "user",
+                    createdAt: new Date()
                 });
-                chatInput.value = ""; // 入力欄を空にする
+                chatInput.value = "";
             } catch (error) {
                 console.error("エラーが発生しました: ", error);
             }
         }
 
-        // 送信ボタンが押されたらsendMessageを実行
-        // 元のHTMLの送信ボタンにonclickが設定されていない場合、ここで設定します
-        chatBtn.removeAttribute('onclick'); 
         chatBtn.addEventListener('click', sendMessage);
+        
+        // Enterキーでも送信できるようにする
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
 
-        // B. 金庫（Firestore）の中身を監視して、メッセージが増えたらリアルタイムで画面に表示する
-        // 時間の古い順（orderBy）に並べ替えて取得します
+        // データベースを監視してチャットをリアルタイム更新
         const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
         
         onSnapshot(q, (snapshot) => {
-            chatBox.innerHTML = ""; // 一旦画面のチャットをクリア
-            
+            chatBox.innerHTML = "";
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const msgDiv = document.createElement('div');
-                
-                // 自分が送ったか相手が送ったかでデザインを分ける（今回は簡易的にすべてsendにします）
-                msgDiv.classList.add('msg', 'send');
+                msgDiv.classList.add('msg', 'send'); // 簡易的にすべて送信風に表示
                 msgDiv.innerText = data.text;
-                
                 chatBox.appendChild(msgDiv);
             });
-            
-            // チャットの一番下まで自動スクロール
             chatBox.scrollTop = chatBox.scrollHeight;
         });
 
-        // --- 以前のページ切り替えなどの関数（エラー防止のため残す） ---
+        // --- 画面切り替えなどの関数（外部から呼べるようにwindowにくっつける） ---
         window.switchPage = function(pageId) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
