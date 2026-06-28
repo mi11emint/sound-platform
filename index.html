@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Platform</title>
+    <!-- Google Fontsからスタイリッシュなフォントを読み込み -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fcfcfc;
+            --text-color: #1a1a1a;
+            --accent-color: #333333;
+            --card-bg: #ffffff;
+            --font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eeeeee;
+            background: rgba(255,255,255,0.8);
+            position: sticky;
+            top: 0;
+            zIndex: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid var(--text-color);
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* メイン検索画面のスタイル */
+        .hero-title {
+            font-size: 28px;
+            font-weight: 300;
+            margin: 40px 0 20px 0;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        /* 個人ページのスタイル */
+        .profile-header {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: #ddd;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .voice-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* LINE風依頼箱 */
+        .chat-box {
+            border: 1px solid #ddd;
+            height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f6f6f6;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .msg {
+            margin-bottom: 10px;
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .msg.send {
+            background: #85e385;
+            margin-left: auto;
+        }
+
+        .msg.receive {
+            background: #ffffff;
+        }
+
+        /* デコレーションパネル */
+        .deco-panel {
+            background: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .deco-panel label { display: block; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="switchPage('search-page')">Voice Platform</div>
+        <div>
+            <button class="nav-btn" onclick="switchPage('search-page')">検索</button>
+            <button class="nav-btn" onclick="switchPage('profile-page')">マイページ</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. メイン検索画面 -->
+        <section id="search-page" class="page active">
+            <h1 class="hero-title">より、心に触れる声を</h1>
+            <div class="search-box">
+                <input type="text" placeholder="#ツンデレ #ナレーション #爽やか...">
+                <button class="nav-btn">検索</button>
+            </div>
+
+            <div class="card">
+                <h3>白音（しらね）つむぎ</h3>
+                <p>透明感のあるナレーションが得意です。</p>
+                <div>
+                    <span class="tag">#ナレーション</span><span class="tag">#綺麗め</span>
+                </div>
+                <button class="nav-btn" style="margin-top: 10px;" onclick="switchPage('profile-page')">ページを見る</button>
+            </div>
+        </section>
+
+        <!-- 2. 個人ページ -->
+        <section id="profile-page" class="page">
+            <div class="profile-header">
+                <div class="avatar" id="user-avatar">🎙️</div>
+                <h2 id="user-name-title">白音つむぎ のページ</h2>
+                <p id="user-bio">サンプルボイス公開中。お仕事のご依頼は下部の依頼箱まで！</p>
+            </div>
+
+            <!-- 音声投稿リスト -->
+            <h3>Voice Samples</h3>
+            <div class="card">
+                <div class="voice-item">
+                    <h4>【ボイスサンプル】挨拶（ダウンロード不可）</h4>
+                    <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+                </div>
+
+                <div class="voice-item">
+                    <h4>【配布素材】目覚ましボイス（DL可）</h4>
+                    <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+                    <div class="btn-group">
+                        <button class="action-btn" onclick="countDl()">⬇️ ダウンロード</button>
+                        <span style="font-size: 12px; color: #666;" id="dl-count">DL数: 24回</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 台本投稿 -->
+            <h3>Posted Scripts</h3>
+            <div class="card">
+                <h4>【朗読用台本】雨の日のカフェ</h4>
+                <p style="font-size: 14px; color:#555; white-space: pre-wrap; background:#f9f9f9; padding:10px; border-radius:5px; margin-top:5px;">「ねえ、知ってる？雨の日にだけ開く、不思議な図書館の話…」</p>
+                <div><span class="tag">#ボイス台本</span><span class="tag">#切ない</span></div>
+            </div>
+
+            <!-- LINE風 依頼箱 -->
+            <h3>依頼箱 (Chat)</h3>
+            <div class="card">
+                <div class="chat-box">
+                    <div class="msg receive">はじめまして！動画のナレーションをお願いできますか？</div>
+                    <div class="msg send">ご依頼ありがとうございます！どのようなイメージでしょうか？</div>
+                </div>
+                <div style="display: flex; gap:5px;">
+                    <input type="text" placeholder="メッセージを入力..." style="flex:1; padding:8px; border-radius:4px; border:1px solid #ccc;">
+                    <button class="nav-btn">送信</button>
+                </div>
+            </div>
+
+            <!-- デコレーション機能（デモ用） -->
+            <div class="deco-panel">
+                <h4> ページをデコレーション（デモ）</h4>
+                <label>背景色: <input type="color" id="bg-picker" value="#fcfcfc" onchange="changeBg(this.value)"></label>
+                <label>フォント変更: 
+                    <select onchange="changeFont(this.value)">
+                        <option value="'Noto Sans JP', sans-serif">ゴシック体</option>
+                        <option value="'Playfair Display', serif">明朝体風</option>
+                    </select>
+                </label>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ページ切り替えのJavascript
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // DL数を仮に増やす機能
+        let count = 24;
+        function countDl() {
+            count++;
+            document.getElementById('dl-count').innerText = `DL数: ${count}回`;
+            alert("音声をダウンロードしました！（デモ動作）");
+        }
+
+        // デコレーション変更
+        function changeBg(color) {
+            document.documentElement.style.setProperty('--bg-color', color);
+        }
+        function changeFont(font) {
+            document.documentElement.style.setProperty('--font-family', font);
+        }
+        
+        
+    <!-- 1. Firebaseの最新のプログラム（SDK）を読み込む -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 2. ★ここにあなたの「金庫の鍵」をそのまま貼り付けてください
+        // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyABhX_tOk7ExSTBSPY5wXjoID-9YCGNjJQ",
+  authDomain: "sound-platform-48602.firebaseapp.com",
+  projectId: "sound-platform-48602",
+  storageBucket: "sound-platform-48602.firebasestorage.app",
+  messagingSenderId: "595859135501",
+  appId: "1:595859135501:web:8f96a29fdaa3decf9b0944"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+        // Firebaseの初期化
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- ここから本物のチャット（依頼箱）の処理 ---
+
+        // HTMLの要素（ボタンや入力欄）を取得
+        const chatInput = document.querySelector('#profile-page input[type="text"]');
+        const chatBtn = document.querySelector('#profile-page .nav-btn[onclick=""]'); // 送信ボタン
+        const chatBox = document.querySelector('.chat-box');
+
+        // A. メッセージを送信して金庫（Firestore）に保存する関数
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text === "") return; // 空っぽなら何もしない
+
+            try {
+                // Firestoreの「messages」というコレクション（フォルダのようなもの）に保存
+                await addDoc(collection(db, "messages"), {
+                    text: text,
+                    sender: "user", // 本来はログインユーザー名が入ります
+                    createdAt: new Date() // 送信時間を記録
+                });
+                chatInput.value = ""; // 入力欄を空にする
+            } catch (error) {
+                console.error("エラーが発生しました: ", error);
+            }
+        }
+
+        // 送信ボタンが押されたらsendMessageを実行
+        // 元のHTMLの送信ボタンにonclickが設定されていない場合、ここで設定します
+        chatBtn.removeAttribute('onclick'); 
+        chatBtn.addEventListener('click', sendMessage);
+
+        // B. 金庫（Firestore）の中身を監視して、メッセージが増えたらリアルタイムで画面に表示する
+        // 時間の古い順（orderBy）に並べ替えて取得します
+        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+        
+        onSnapshot(q, (snapshot) => {
+            chatBox.innerHTML = ""; // 一旦画面のチャットをクリア
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const msgDiv = document.createElement('div');
+                
+                // 自分が送ったか相手が送ったかでデザインを分ける（今回は簡易的にすべてsendにします）
+                msgDiv.classList.add('msg', 'send');
+                msgDiv.innerText = data.text;
+                
+                chatBox.appendChild(msgDiv);
+            });
+            
+            // チャットの一番下まで自動スクロール
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        // --- 以前のページ切り替えなどの関数（エラー防止のため残す） ---
+        window.switchPage = function(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        let count = 24;
+        window.countDl = function() {
+            count++;
+            document.getElementById('dl-count').innerText = `DL数: ${count}回`;
+            alert("音声をダウンロードしました！（デモ動作）");
+        }
+
+        window.changeBg = function(color) {
+            document.documentElement.style.setProperty('--bg-color', color);
+        }
+        window.changeFont = function(font) {
+            document.documentElement.style.setProperty('--font-family', font);
+        }
+    </script>
+</body>
+</html>
