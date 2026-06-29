@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voice Platform</title>
-    <!-- Google Fontsからスタイリッシュなフォントを読み込み -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,11 +15,7 @@
             --font-family: 'Noto Sans JP', sans-serif;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: var(--font-family);
@@ -42,165 +38,42 @@
             backdrop-filter: blur(5px);
         }
 
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            cursor: pointer;
-        }
+        .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: bold; letter-spacing: 1px; cursor: pointer; }
 
         .nav-btn {
-            background: none;
-            border: 1px solid var(--text-color);
-            padding: 6px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            border-radius: 20px;
-            transition: 0.2s;
+            background: none; border: 1px solid var(--text-color); padding: 6px 16px;
+            cursor: pointer; font-size: 14px; border-radius: 20px; transition: 0.2s;
         }
+        .nav-btn:hover { background: var(--text-color); color: var(--bg-color); }
 
-        .nav-btn:hover {
-            background: var(--text-color);
-            color: var(--bg-color);
-        }
+        main { padding: 20px; max-width: 600px; margin: 0 auto; }
 
-        main {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
 
-        .page {
-            display: none;
-        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 14px; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
 
-        .page.active {
-            display: block;
-        }
+        .hero-title { font-size: 28px; font-weight: 300; margin: 40px 0 20px 0; text-align: center; letter-spacing: 2px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-box input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
 
-        /* メイン検索画面のスタイル */
-        .hero-title {
-            font-size: 28px;
-            font-weight: 300;
-            margin: 40px 0 20px 0;
-            text-align: center;
-            letter-spacing: 2px;
-        }
+        .card { background: var(--card-bg); border: 1px solid #eee; padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .tag { display: inline-block; background: #f0f0f0; color: #666; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; margin-top: 5px; }
+        .profile-header { text-align: center; padding: 30px 0; }
+        .avatar { width: 80px; height: 80px; background: #ddd; border-radius: 50%; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .voice-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        audio { width: 100%; margin-top: 8px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 8px; }
+        .action-btn { font-size: 12px; padding: 4px 10px; background: #f0f0f0; border: none; border-radius: 4px; cursor: pointer; }
 
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
+        .chat-box { border: 1px solid #ddd; height: 250px; overflow-y: auto; padding: 10px; background: #f6f6f6; margin-bottom: 10px; border-radius: 8px; }
+        .msg { margin-bottom: 10px; max-width: 70%; padding: 8px 12px; border-radius: 15px; font-size: 14px; }
+        .msg.send { background: #85e385; margin-left: auto; }
+        .msg.receive { background: #ffffff; }
 
-        .search-box input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid #eee;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        .tag {
-            display: inline-block;
-            background: #f0f0f0;
-            color: #666;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-right: 5px;
-            margin-top: 5px;
-        }
-
-        /* 個人ページのスタイル */
-        .profile-header {
-            text-align: center;
-            padding: 30px 0;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            background: #ddd;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-        }
-
-        .voice-item {
-            border-bottom: 1px solid #eee;
-            padding: 15px 0;
-        }
-
-        audio {
-            width: 100%;
-            margin-top: 8px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .action-btn {
-            font-size: 12px;
-            padding: 4px 10px;
-            background: #f0f0f0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* LINE風依頼箱 */
-        .chat-box {
-            border: 1px solid #ddd;
-            height: 250px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #f6f6f6;
-            margin-bottom: 10px;
-            border-radius: 8px;
-        }
-
-        .msg {
-            margin-bottom: 10px;
-            max-width: 70%;
-            padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 14px;
-        }
-
-        .msg.send {
-            background: #85e385;
-            margin-left: auto;
-        }
-
-        .msg.receive {
-            background: #ffffff;
-        }
-
-        /* デコレーションパネル */
-        .deco-panel {
-            background: #eee;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 14px;
-        }
+        .deco-panel { background: #eee; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; }
         .deco-panel label { display: block; margin-bottom: 8px; }
     </style>
 </head>
@@ -211,24 +84,42 @@
         <div>
             <button class="nav-btn" onclick="switchPage('search-page')">検索</button>
             <button class="nav-btn" onclick="switchPage('profile-page')">マイページ</button>
+            <!-- ログアウトボタン（初期状態は非表示） -->
+            <button class="nav-btn" id="logout-btn" style="display: none;">ログアウト</button>
         </div>
     </header>
 
     <main>
+        <!-- 0. ログイン / アカウント登録画面（最初だけ表示） -->
+        <section id="auth-page" class="page active">
+            <h1 class="hero-title" id="auth-title">ログイン</h1>
+            <div class="card">
+                <div class="input-group">
+                    <label>メールアドレス</label>
+                    <input type="email" id="auth-email" placeholder="example@email.com">
+                </div>
+                <div class="input-group">
+                    <label>パスワード（6文字以上）</label>
+                    <input type="password" id="auth-password" placeholder="******">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                    <button class="nav-btn" id="login-btn" style="background: #333; color: #fff;">ログインする</button>
+                    <button class="nav-btn" id="register-btn">新しくアカウントを作る</button>
+                </div>
+            </div>
+        </section>
+
         <!-- 1. メイン検索画面 -->
-        <section id="search-page" class="page active">
+        <section id="search-page" class="page">
             <h1 class="hero-title">より、心に触れる声を</h1>
             <div class="search-box">
                 <input type="text" placeholder="#ツンデレ #ナレーション #爽やか...">
                 <button class="nav-btn">検索</button>
             </div>
-
             <div class="card">
                 <h3>白音（しらね）つむぎ</h3>
                 <p>透明感のあるナレーションが得意です。</p>
-                <div>
-                    <span class="tag">#ナレーション</span><span class="tag">#綺麗め</span>
-                </div>
+                <div><span class="tag">#ナレーション</span><span class="tag">#綺麗め</span></div>
                 <button class="nav-btn" style="margin-top: 10px;" onclick="switchPage('profile-page')">ページを見る</button>
             </div>
         </section>
@@ -237,7 +128,8 @@
         <section id="profile-page" class="page">
             <div class="profile-header">
                 <div class="avatar" id="user-avatar">🎙️</div>
-                <h2 id="user-name-title">白音つむぎ のページ</h2>
+                <h2 id="user-name-title">ログイン中ユーザーのページ</h2>
+                <p id="user-email-display" style="font-size: 12px; color: #666;"></p>
                 <p id="user-bio">サンプルボイス公開中。お仕事のご依頼は下部の依頼箱まで！</p>
             </div>
 
@@ -248,7 +140,6 @@
                     <h4>【ボイスサンプル】挨拶（ダウンロード不可）</h4>
                     <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
                 </div>
-
                 <div class="voice-item">
                     <h4>【配布素材】目覚ましボイス（DL可）</h4>
                     <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
@@ -259,36 +150,14 @@
                 </div>
             </div>
 
-            <!-- 台本投稿 -->
-            <h3>Posted Scripts</h3>
-            <div class="card">
-                <h4>【朗読用台本】雨の日のカフェ</h4>
-                <p style="font-size: 14px; color:#555; white-space: pre-wrap; background:#f9f9f9; padding:10px; border-radius:5px; margin-top:5px;">「ねえ、知ってる？雨の日にだけ開く、不思議な図書館の話…」</p>
-                <div><span class="tag">#ボイス台本</span><span class="tag">#切ない</span></div>
-            </div>
-
             <!-- LINE風 依頼箱 -->
             <h3>依頼箱 (Chat)</h3>
             <div class="card">
-                <div class="chat-box">
-                    <!-- Firebaseから取得したメッセージがここに自動で入ります -->
-                </div>
+                <div class="chat-box"></div>
                 <div style="display: flex; gap:5px;">
                     <input type="text" placeholder="メッセージを入力..." style="flex:1; padding:8px; border-radius:4px; border:1px solid #ccc;">
                     <button class="nav-btn" id="send-btn">送信</button>
                 </div>
-            </div>
-
-            <!-- デコレーション機能（デモ用） -->
-            <div class="deco-panel">
-                <h4> ページをデコレーション（デモ）</h4>
-                <label>背景色: <input type="color" id="bg-picker" value="#fcfcfc" onchange="changeBg(this.value)"></label>
-                <label>フォント変更: 
-                    <select onchange="changeFont(this.value)">
-                        <option value="'Noto Sans JP', sans-serif">ゴシック体</option>
-                        <option value="'Playfair Display', serif">明朝体風</option>
-                    </select>
-                </label>
             </div>
         </section>
     </main>
@@ -297,8 +166,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        // Auth（認証）プログラムを追加で読み込む
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // あなたのFirebase金庫の鍵
+        // Firebaseの鍵
         const firebaseConfig = {
             apiKey: "AIzaSyABhX_tOk7ExSTBSPY5wXjoID-9YCGNjJQ",
             authDomain: "sound-platform-48602.firebaseapp.com",
@@ -308,56 +179,116 @@
             appId: "1:595859135501:web:8f96a29fdaa3decf9b0944"
         };
 
-        // Firebaseとデータベースの初期化
+        // 初期化
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app); // Authの初期化
 
-        // --- 本物のチャット（依頼箱）の処理 ---
+        // HTML要素の取得
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // --- 🔒 ログイン・アカウント登録の処理 ---
+
+        // A. 新規アカウント作成
+        registerBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            if(!email || !password) return alert('メールアドレスとパスワードを入力してください');
+            
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert('アカウントを作成し、ログインしました！');
+            } catch (error) {
+                alert('登録エラー: ' + error.message);
+            }
+        });
+
+        // B. ログイン処理
+        loginBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            if(!email || !password) return alert('メールアドレスとパスワードを入力してください');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert('ログインに成功しました！');
+            } catch (error) {
+                alert('ログインエラー: ' + error.message);
+            }
+        });
+
+        // C. ログアウト処理
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                alert('ログアウトしました');
+            } catch (error) {
+                alert('ログアウトエラー: ' + error.message);
+            }
+        });
+
+        // D. 🚨 ユーザーがログイン状態かどうかを常に監視するシステム
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // ログインしている時
+                document.getElementById('user-name-title').innerText = `${user.email.split('@')[0]} のページ`;
+                document.getElementById('user-email-display').innerText = `（アカウント：${user.email}）`;
+                logoutBtn.style.display = 'block'; // ログアウトボタンを表示
+                switchPage('search-page'); // メイン画面へ移動
+            } else {
+                // ログインしていない時（またはログアウトした時）
+                logoutBtn.style.display = 'none';
+                switchPage('auth-page'); // ログイン画面へ戻す
+                emailInput.value = "";
+                passwordInput.value = "";
+            }
+        });
+
+
+        // --- チャット（依頼箱）の処理 ---
         const chatInput = document.querySelector('#profile-page input[type="text"]');
         const chatBtn = document.getElementById('send-btn');
         const chatBox = document.querySelector('.chat-box');
 
-        // メッセージ送信
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (text === "") return;
-
             try {
                 await addDoc(collection(db, "messages"), {
                     text: text,
-                    sender: "user",
+                    sender: auth.currentUser ? auth.currentUser.email : "ゲスト", // ログイン中の人のメアドを入れる
                     createdAt: new Date()
                 });
                 chatInput.value = "";
             } catch (error) {
-                console.error("エラーが発生しました: ", error);
+                console.error("エラー: ", error);
             }
         }
-
         chatBtn.addEventListener('click', sendMessage);
-        
-        // Enterキーでも送信できるようにする
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
 
-        // データベースを監視してチャットをリアルタイム更新
         const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-        
         onSnapshot(q, (snapshot) => {
             chatBox.innerHTML = "";
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const msgDiv = document.createElement('div');
-                msgDiv.classList.add('msg', 'send'); // 簡易的にすべて送信風に表示
-                msgDiv.innerText = data.text;
+                msgDiv.classList.add('msg', 'send');
+                msgDiv.innerText = `${data.sender.split('@')[0]}: ${data.text}`; // 誰が送ったか分かるように
                 chatBox.appendChild(msgDiv);
             });
             chatBox.scrollTop = chatBox.scrollHeight;
         });
 
-        // --- 画面切り替えなどの関数（外部から呼べるようにwindowにくっつける） ---
+        // --- 画面切り替え ---
         window.switchPage = function(pageId) {
+            // ログインしていないのに別ページを開こうとしたらログイン画面に強制送還
+            if (!auth.currentUser && pageId !== 'auth-page') {
+                pageId = 'auth-page';
+            }
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
@@ -366,18 +297,7 @@
         }
 
         let count = 24;
-        window.countDl = function() {
-            count++;
-            document.getElementById('dl-count').innerText = `DL数: ${count}回`;
-            alert("音声をダウンロードしました！（デモ動作）");
-        }
-
-        window.changeBg = function(color) {
-            document.documentElement.style.setProperty('--bg-color', color);
-        }
-        window.changeFont = function(font) {
-            document.documentElement.style.setProperty('--font-family', font);
-        }
+        window.countDl = function() { count++; document.getElementById('dl-count').innerText = `DL数: ${count}回`; }
     </script>
 </body>
 </html>
